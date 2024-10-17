@@ -11,6 +11,7 @@ export default async function PostPage({params}: {params: {id: string}}) {
   });
 
   if (!post) {
+    console.error(`Post com ID ${params.id} não encontrado.`);
     notFound();
   }
 
