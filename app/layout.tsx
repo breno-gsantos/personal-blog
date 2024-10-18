@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { auth } from "@/auth";
+import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const inter = Inter({
   subsets: ['latin']
@@ -24,13 +26,16 @@ export default async function RootLayout({
   console.log(session?.user)
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'antialiased')}>
-        <main className="flex flex-col min-h-[100dvh]">
-          <Navbar />
-          {children}
-          <Footer />
-        </main>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <main className="flex flex-col min-h-[100dvh]">
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster />
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

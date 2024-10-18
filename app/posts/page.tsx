@@ -18,7 +18,7 @@ export default async function PostsPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <Link key={post.id} href={`/post/${post.id}`}>
-              <div className="overflow-hidden rounded-lg bg-card shadow-sm transition-all hover:shadow-md">
+              <div className="overflow-hidden rounded-lg bg-card shadow-sm transition-all hover:shadow-black dark:hover:shadow-white">
                 <img src={post.coverImage as string} alt={post.title} width={400} height={225} className="aspect-video w-full object-cover" />
                 <div className="p-4">
                   <h2 className="text-lg font-semibold group-hover:underline">{post.title}</h2>

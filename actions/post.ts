@@ -87,7 +87,7 @@ export async function updatePost(id: string, values: z.infer<typeof postSchema>)
 
     revalidatePath(`/post/${id}`)
 
-    return {success: true, post: updatePost}
+    return {success: true, post: updatedPost}
   } catch (error) {
     console.error('Erro ao atualizar post:', error)
     return { success: false, error: 'Ocorreu um erro ao atualizar o post.' }

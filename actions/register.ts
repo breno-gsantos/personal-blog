@@ -18,7 +18,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
   const existingUser = await getUserByEmail(email);
 
   if (existingUser) {
-    return {error: 'Email already in use'}
+    return {error: 'Email já cadastrado'}
   }
 
   await db.user.create({
@@ -29,4 +29,6 @@ export async function register(values: z.infer<typeof registerSchema>) {
       password: hashedPassword
     }
   })
+
+  return {success: 'Conta criada!'}
 }

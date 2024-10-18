@@ -5,9 +5,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { register } from "@/actions/register";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { ToastAction } from "@/components/ui/toast";
 
 export const registerSchema = z.object({
   firstName: z.string().min(2, "Name must contain at least 2 characters.").max(50, { message: "Name cannot exceed 50 characters." }),
@@ -26,6 +29,9 @@ export const registerSchema = z.object({
 });
 
 export function RegisterForm() {
+  const { toast } = useToast();
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -41,8 +47,26 @@ export function RegisterForm() {
     try {
       const data = await register(values);
 
-      if (data?.error) console.log(data.error)
+      if (data?.error) {
+          toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: data.error as string
+        })
+      } else if (data?.success) {
+        toast({
+          title: 'Sucesso',
+          description: data.success
+        })
+        router.push('/login')
+      }
     } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Um erro inesperado aconteceu',
+        action: <ToastAction altText="Tente Novamente">Tente Novamente</ToastAction>
+      })
       console.log('An unexpected error ocurred. Please try again')
     } finally {
       form.reset();
@@ -50,28 +74,29 @@ export function RegisterForm() {
   }
 
   return (
-    <CardWrapper headerTitle="📝 Register" headerDescription="Create Account" backButtonLabel="Already have an account?" backButtonHref="/login">
+    <CardWrapper headerTitle="📝 Registro" headerDescription="Criar conta" backButtonLabel="Já possui uma conta?" backButtonHref="/login">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <FormField control={form.control} name="firstName" render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="John Doe" disabled={form.formState.isSubmitting} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
-            <FormField control={form.control} name="lastName" render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="John Doe" disabled={form.formState.isSubmitting} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} />
+          <div className="space-y-8">
+              <FormField control={form.control} name="firstName" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="John" disabled={form.formState.isSubmitting} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+              <FormField control={form.control} name="lastName" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sobrenome</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Doe" disabled={form.formState.isSubmitting} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
             <FormField control={form.control} name="email" render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -83,8 +108,8 @@ export function RegisterForm() {
             )} />
             <FormField control={form.control} name="password" render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormDescription>At least one uppercase letter, lowercase, number and special character</FormDescription>
+                <FormLabel>Senha</FormLabel>
+                <FormDescription>Ao menos uma letra maiúscula, minúscula, número e caractere especial</FormDescription>
                 <FormControl>
                   <Input type="password" placeholder="********" disabled={form.formState.isSubmitting} {...field} />
                 </FormControl>
@@ -93,15 +118,14 @@ export function RegisterForm() {
             )} />
             <FormField control={form.control} name="confirmPassword" render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
+                <FormLabel>Confirmar Senha</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="********" disabled={form.formState.isSubmitting} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )} />
-          </div>
-          <Button className="w-full" disabled={form.formState.isSubmitting}>Register</Button>
+          <Button className="w-full" disabled={form.formState.isSubmitting}>Registrar</Button>
         </form>
       </Form>
     </CardWrapper>

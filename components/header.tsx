@@ -22,9 +22,9 @@ export async function Header({ postId }: HeaderProps) {
   }
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-background shadow-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-gray-600 hover:text-gray-800 mr-4">
+        <Link href="/" className="text-muted-foreground hover:text-secondary-foreground mr-4">
           <ArrowLeft size={24} />
         </Link>
         {isAuthor && postId && (

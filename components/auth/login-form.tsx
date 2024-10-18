@@ -8,6 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
 import { login } from "@/actions/login";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { ToastAction } from "../ui/toast";
 
 const loginSchema = z.object({
   email: z.string().email('Required'),
@@ -15,6 +18,8 @@ const loginSchema = z.object({
 })
 
 export function LoginForm() {
+  const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -26,9 +31,27 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     try {
       const data = await login(values);
-      if (data?.error) console.log(data.error)
-      if(data.success) console.log(data.success)
+      
+      if (data.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: data.error as string
+        })
+      } else if (data.success) {
+        toast({
+          title: 'Sucesso',
+          description: data.success
+        })
+        router.refresh();
+      }
     } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Um erro inesperado aconteceu',
+        action: <ToastAction altText="Tente Novamente">Tente Novamente</ToastAction>
+      })
       console.log('An unexpected error ocurred. Please try again')
     } finally {
       form.reset();
@@ -36,7 +59,7 @@ export function LoginForm() {
   }
 
   return (
-    <CardWrapper headerTitle="🔐 Login" headerDescription="Welcome back!" backButtonLabel="Don't have an account?" backButtonHref="/register">
+    <CardWrapper headerTitle="🔐 Login" headerDescription="Bem-vindo de volta!" backButtonLabel="Não possui uma conta?" backButtonHref="/register">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-4">
@@ -51,7 +74,7 @@ export function LoginForm() {
             )} />
             <FormField control={form.control} name="password" render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <FormLabel>Senha</FormLabel>
                 <FormControl>
                   <Input type="password" placeholder="********" disabled={form.formState.isSubmitting} {...field} />
                 </FormControl>

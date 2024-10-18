@@ -16,6 +16,7 @@ model User {
   email        String  @unique
   password     String
   posts        Post[]  @relation("PostToUser")
+  comments     Comment[] @relation("CommentToUser")
 
   @@map("users")
 }
@@ -28,8 +29,20 @@ model Post {
   coverImage   String?
   authorId     String   @db.ObjectId
   author       User     @relation("PostToUser", fields: [authorId], references: [id])
+  comments     Comment[] @relation("CommentToPost")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   @@map("posts")
+}
+
+model Comment{
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  content      String
+  authorId     String   @db.ObjectId
+  author       User     @relation("CommentToUser", fields: [authorId], references: [id])
+  postId       String   @db.ObjectId
+  post         Post     @relation("CommentToPost", fields: [postId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
